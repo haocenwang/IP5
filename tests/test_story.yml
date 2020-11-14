@@ -1,0 +1,7 @@
+stories:
+- story: happy path 1
+  steps:
+  - user: |
+      hello
+    intent: greet
+  - action: utter_greet
