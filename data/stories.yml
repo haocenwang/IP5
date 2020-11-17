@@ -11,6 +11,8 @@ stories:
       - intent: greet
       - action: utter_greet
       - intent: request_room
+      - action: room_form
+      - active_loop: room_form
       - intent: num_p_inform
       - action: utter_ask_date
       - intent: date_inform
@@ -22,3 +24,4 @@ stories:
       - intent: room_type_inform
       - action: utter_submit
       - action: utter_slots_values
+      - active_loop: null

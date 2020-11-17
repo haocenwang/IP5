@@ -54,13 +54,14 @@ nlu:
     - About [30 minutes](duration)
     - [2 and half hours](duration)
     - [30 minutes](duration)
+    - [half hour](duration)
 
 - intent: room_type_inform
   examples: |
     - I want to have a room with [computers](room_type)
     - With [window](room_type) and [screen](room_type)
     - with [screen](room_type)
-    - with [windwow](room type)
+    - with [window](room_type)
 
 - intent: request_room
   examples: |
