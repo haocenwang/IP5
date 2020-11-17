@@ -5,3 +5,20 @@ stories:
     steps:
       - intent: greet
       - action: utter_greet
+  
+  - story: book room complete
+    steps:
+      - intent: greet
+      - action: utter_greet
+      - intent: request_room
+      - intent: num_p_inform
+      - action: utter_ask_date
+      - intent: date_inform
+      - action: utter_ask_from_time
+      - intent: from_time_inform
+      - action: utter_ask_duration
+      - intent: duration_inform
+      - action: utter_ask_room_type
+      - intent: room_type_inform
+      - action: utter_submit
+      - action: utter_slots_values

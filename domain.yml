@@ -1,8 +1,92 @@
 version: "2.0"
 
 intents:
+- request_room:
+    use_entities: []
 - greet
+- num_p_inform
+- date_inform
+- from_time_inform
+- duration_inform
+- room_type_inform
+
+
+entities:
+  - number
+  - room_type
+  - date
+  - from_time
+  - duration
+
+slots:
+  num_persons:
+    type: float
+    influence_conversation: false
+    auto_fill: false
+  room_type:
+    type: text
+    influence_conversation: false
+    auto_fill: false
+  date:
+    type: text
+    influence_conversation: false
+    auto_fill: false
+  from_time:
+    type: text
+    influence_conversation: false
+    auto_fill: false
+  duration:
+    type: float
+    influence_conversation: false
+    auto_fill: false
 
 responses:
   utter_greet:
     - text: "Hello! How can I help you?"
+  utter_ask_num_persons:
+    - text: "How many people?"
+  utter_ask_date:
+    - text: "On which day?"
+  utter_ask_room_type:
+    - text: "What type of room do you want? With Window, Computers, Screen?"
+  utter_ask_from_time:
+    - text: "At what time do you want to start?"
+  utter_ask_duration:
+    - text: "How many Hours or Minutes do you need for the meeting"
+  utter_wrong_num_persons:
+    - text: "Number of people should be a positive integer, please try again"
+  utter_submit:
+    - text: All done!
+  utter_slots_values:
+    - text: "You have successfully booked a room:\n
+             - num_persons: {num_persons}\n
+             - date: {date}\n
+             - from_time: {from_time}\n
+             - duration: {duration}\n
+             - room_type: {room_type}"
+
+
+forms:
+  room_form:
+    num_persons:
+    - type: from_entity
+      entity: number
+      intent: num_p_inform
+    date:
+    - type: from_entity
+      entity: date
+      intent: date_inform
+    from_time:
+    - type: from_entity
+      entity: from_time
+      intent: from_time_inform
+    duration:
+    - type: from_entity
+      entity: duration
+      intent: duration_inform
+    room_type:
+    - type: from_entity
+      entity: room_type
+      intent: room_type_inform
+
+  
