@@ -6,9 +6,6 @@ rules:
       - intent: greet
       - action: utter_greet
 
-  - rule: activate room form
-    steps:
-      - intent: request_room
-      - action: room_form
-      - active_loop: room_form
+      
+
   

@@ -55,8 +55,8 @@ responses:
     - text: "How many Hours or Minutes do you need for the meeting"
   utter_wrong_num_persons:
     - text: "Number of people should be a positive integer, please try again"
-  utter_submit:
-    - text: All done!
+  utter_ask_confirm:
+    - text: "Your booking is confirmed"
   utter_slots_values:
     - text: "You have successfully booked a room:\n
              - num_persons: {num_persons}\n

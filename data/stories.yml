@@ -12,7 +12,6 @@ stories:
       - action: utter_greet
       - intent: request_room
       - action: room_form
-      - active_loop: room_form
       - intent: num_p_inform
       - action: utter_ask_date
       - intent: date_inform
@@ -22,6 +21,5 @@ stories:
       - intent: duration_inform
       - action: utter_ask_room_type
       - intent: room_type_inform
-      - action: utter_submit
+      - action: utter_ask_confirm
       - action: utter_slots_values
-      - active_loop: null

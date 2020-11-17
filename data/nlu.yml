@@ -61,7 +61,6 @@ nlu:
     - I want to have a room with [computers](room_type)
     - With [window](room_type) and [screen](room_type)
     - with [screen](room_type)
-    - with [window](room_type)
 
 - intent: request_room
   examples: |
