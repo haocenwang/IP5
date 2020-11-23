@@ -37,29 +37,33 @@ nlu:
 
 - intent: date_inform
   examples: |
-    - I want to make a meeting room reservation [after tomorror](date) at [14:15](from_time)
-    - [next Tuesday](date)
-    - [Now](date,from_time)
-    - I want to book a meeting room [now](date,from_time)
+    - after tomorrow at 14:15
+    - next Tuesday
+    - Now
+    - I want to book a meeting room now
+    - tomorrow
+    - after tomorrow
+    - on 2020-11-26
 
 - intent: from_time_inform
   examples: |
-    - at [3pm](from_time)
-    - at [11:30](from_time)
-    - at [11](from_time)
+    - at 3pm
+    - at 11:30
+    - at 11
+    - at 3 afternoon
 
 - intent: duration_inform
   examples: |
     - We need [1 hour](duration)
     - About [30 minutes](duration)
-    - [2 and half hours](duration)
+    - [2](duration) and [half hours](duration)
     - [30 minutes](duration)
     - [half hour](duration)
 
 - intent: room_type_inform
   examples: |
     - I want to have a room with [computers](room_type)
-    - With [window](room_type) and [screen](room_type)
+    - With [window and screen](room_type)
     - with [screen](room_type)
 
 - intent: request_room
@@ -71,3 +75,6 @@ nlu:
     - make a reservation
     - book a meeting room
     - meeting room pleasse
+    - i want to book a room next Tuesday at 3pm
+    - i want to book a room for 3 people next Tuesday at 3pm
+    - i want to book a room for 3 people

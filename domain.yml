@@ -14,9 +14,10 @@ intents:
 entities:
   - number
   - room_type
-  - date
   - from_time
   - duration
+  - time
+  - from_date
 
 slots:
   num_persons:
@@ -24,10 +25,10 @@ slots:
     influence_conversation: false
     auto_fill: false
   room_type:
-    type: text
+    type: list
     influence_conversation: false
     auto_fill: false
-  date:
+  from_date:
     type: text
     influence_conversation: false
     auto_fill: false
@@ -45,7 +46,7 @@ responses:
     - text: "Hello! How can I help you?"
   utter_ask_num_persons:
     - text: "How many people?"
-  utter_ask_date:
+  utter_ask_from_date:
     - text: "On which day?"
   utter_ask_room_type:
     - text: "What type of room do you want? With Window, Computers, Screen?"
@@ -60,7 +61,7 @@ responses:
   utter_slots_values:
     - text: "You have successfully booked a room:\n
              - num_persons: {num_persons}\n
-             - date: {date}\n
+             - date: {from_date}\n
              - from_time: {from_time}\n
              - duration: {duration}\n
              - room_type: {room_type}"
@@ -71,19 +72,19 @@ forms:
     num_persons:
     - type: from_entity
       entity: number
-      intent: num_p_inform
-    date:
+      intent: [request_room,num_p_inform]
+    from_date:
     - type: from_entity
-      entity: date
-      intent: date_inform
+      entity: time
+      intent: [request_room,date_inform]
     from_time:
     - type: from_entity
-      entity: from_time
-      intent: from_time_inform
+      entity: time
+      intent: [request_room,date_inform,from_time_inform]
     duration:
     - type: from_entity
       entity: duration
-      intent: duration_inform
+      intent: [duration_inform]
     room_type:
     - type: from_entity
       entity: room_type
