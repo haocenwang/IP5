@@ -13,11 +13,9 @@ intents:
 
 entities:
   - number
-  - room_type
-  - from_time
   - duration
   - time
-  - from_date
+  - room_type
 
 slots:
   num_persons:
@@ -25,7 +23,7 @@ slots:
     influence_conversation: false
     auto_fill: false
   room_type:
-    type: list
+    type: float
     influence_conversation: false
     auto_fill: false
   from_date:
@@ -48,14 +46,13 @@ responses:
     - text: "How many people?"
   utter_ask_from_date:
     - text: "On which day?"
-  utter_ask_room_type:
-    - text: "What type of room do you want? With Window, Computers, Screen?"
   utter_ask_from_time:
     - text: "At what time do you want to start?"
   utter_ask_duration:
     - text: "How many Hours or Minutes do you need for the meeting"
-  utter_ask_confirm:
-    - text: "Your booking is confirmed"
+  utter_ask_room_type:
+    - text: "Which kind of room do you want? 1:window, 2:screen, 3:computer?"
+
   utter_slots_values:
     - text: "You have successfully booked a room:\n
              - num_persons: {num_persons}\n
@@ -63,6 +60,7 @@ responses:
              - from_time: {from_time}\n
              - duration: {duration}\n
              - room_type: {room_type}"
+
   utter_wrong_num_persons:
     - text: "Number of people should be a positive integer, please try again"
 
@@ -87,8 +85,10 @@ forms:
       intent: [duration_inform]
     room_type:
     - type: from_entity
-      entity: room_type
-      intent: room_type_inform
+      entity: number
+      intent: [room_tpye_inform]
+ 
+
   
 actions:
 - validate_room_form

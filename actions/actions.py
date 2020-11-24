@@ -26,6 +26,7 @@ class ValidateRoomForm(FormValidationAction):
         except ValueError:
             return False
     
+    
     def validate_num_persons(
         self,
         value: Text,
@@ -72,5 +73,6 @@ class ValidateRoomForm(FormValidationAction):
         
         return {"from_time":get_time}
 
+   
         
         
