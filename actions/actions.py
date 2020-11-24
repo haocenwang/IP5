@@ -69,7 +69,7 @@ class ValidateRoomForm(FormValidationAction):
         """Validate from_date value."""
         time_slot = tracker.get_slot('from_time')
         get_time = time_slot[11:19]
-
+        
         return {"from_time":get_time}
 
         
