@@ -46,8 +46,6 @@ responses:
     - text: "How many people?"
   utter_ask_from_date:
     - text: "On which day?"
-  utter_ask_room_type:
-    - text: "What type of room do you want? With Window, Computers, Screen?"
   utter_ask_from_time:
     - text: "At what time do you want to start?"
   utter_ask_duration:
@@ -65,6 +63,8 @@ responses:
     - text: "Number of people should be a positive integer, please try again"
   utter_ask_exact_from_time:
     - text: "Please give me the extact time"
+  utter_ask_room_type:
+    - text: "What type of room do you want? With Window, Computers, Screen?"
 
 
 forms:
@@ -85,11 +85,8 @@ forms:
     - type: from_entity
       entity: duration
       intent: [duration_inform]
-    room_type:
-    - type: from_entity
-      entity: room_type
-      intent: room_type_inform
   
 actions:
 - validate_room_form
+- room_type_action
   
