@@ -14,10 +14,8 @@ intents:
 entities:
   - number
   - room_type
-  - from_time
   - duration
   - time
-  - from_date
 
 slots:
   num_persons:
@@ -65,6 +63,8 @@ responses:
              - room_type: {room_type}"
   utter_wrong_num_persons:
     - text: "Number of people should be a positive integer, please try again"
+  utter_ask_exact_from_time:
+    - text: "Please give me the extact time"
 
 
 forms:
