@@ -25,49 +25,6 @@ class ValidateRoomForm(FormValidationAction):
             return True
         except ValueError:
             return False
-    
-    def validate_num_persons(
-        self,
-        value: Text,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: Dict[Text, Any],
-    ) -> Dict[Text, Any]:
-        """Validate num_people value."""
-
-        if self.is_int(value) and int(value) > 0:
-            return [SlotSet('num_persons', value)]
-        else:
-            dispatcher.utter_message(template="utter_wrong_num_persons")
-            # validation failed, set slot to None
-            return [SlotSet('num_persons', None)]
-    
-    def validate_from_date(
-        self,
-        value: Text,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: Dict[Text, Any],
-    ) -> Dict[Text, Any]:
-         """Validate from_date value."""
-         date = tracker.get_slot('from_date')
-         date_temp = date[0:10]
-         time_temp = date[11:19]
-         
-         return [SlotSet('from_date', date_temp),SlotSet('from_time',time_temp)]
-
-    def validate_from_time(
-        self,
-        value: Text,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: Dict[Text, Any],
-    ) -> Dict[Text, Any]:
-         """Validate from_date value."""
-         time = tracker.get_slot('from_time')
-         if time == "00:00:00":
-             dispatcher.utter_message(template="utter_ask_exact_from_time")
-             return [SlotSet('from_time',None)]
 
         
         
