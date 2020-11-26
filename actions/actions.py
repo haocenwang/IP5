@@ -7,6 +7,7 @@ from rasa_sdk.forms import FormAction
 from rasa_sdk import Action
 from rasa_sdk.events import SlotSet
 import dateutil.parser
+import csv
 
 class ValidateRoomForm(FormValidationAction):
     """Example of a form validation action."""
@@ -107,12 +108,22 @@ class ValidateRoomForm(FormValidationAction):
             return 'check_room_action'
 
         @staticmethod
-        def create_db():
-            elements = [['room_id','num_p','window','screen','computer'],
-                        [201,3,True,False,False],
-                        [301,4,True,True,True],
-                        [401,5,False,True,False],
-                        [501,7,True,False,True]]
+        def create_room_db():
+            with open('/Users/haoce/Documents/IP5/data/room.csv', 'r') as f:
+                mycsv = list(csv.reader(f))
+                elements = []
+                for i in range(len(mycsv)):
+                    text = mycsv[i][0]
+                    text = str.split(text, ";")
+                    temp = []
+                    for j in range(len(text)):
+                        temp.append(text[j])
+                    elements.append(temp)
+
+                for k in range(1, len(elements)):
+                    for l in range(len(elements[0])):
+                        elements[k][l] = int(elements[k][l])
+
             return elements
 
 
@@ -125,12 +136,12 @@ class ValidateRoomForm(FormValidationAction):
 
             num_p = tracker.get_slot('num_persons')
             room_type = tracker.get_slot('room_type')
-            db = self.create_db()
-            temp = []
+            db = self.create_room_db()
+            temp_num_p = []
 
             for i in range(1,len(db)):
                 if num_p <= db[i][1]:
-                    temp.append(db[i])
-            for i in range(len(temp)):
-                dispatcher.utter_message(text="Possibilities are: " + str(temp[i][0]))
+                    temp_num_p.append(db[i])
+            for i in range(len(temp_num_p)):
+                dispatcher.utter_message(text="Possibilities are: " + str(temp_num_p[i][0]))
             return []
