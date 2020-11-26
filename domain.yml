@@ -50,6 +50,8 @@ responses:
     - text: "At what time do you want to start?"
   utter_ask_duration:
     - text: "How many Hours or Minutes do you need for the meeting"
+  utter_ask_room_type:
+    - text: "which room do you want? Window, Screen, Computer"
   utter_ask_confirm:
     - text: "Your booking is confirmed"
   utter_slots_values:
@@ -63,8 +65,8 @@ responses:
     - text: "Number of people should be a positive integer, please try again"
   utter_ask_exact_from_time:
     - text: "Please give me the extact time"
-  utter_ask_room_type:
-    - text: "What type of room do you want? With Window, Computers, Screen?"
+  utter_wrong_room_type:
+    - text: "Wrong room type"
 
 
 forms:
@@ -85,6 +87,10 @@ forms:
     - type: from_entity
       entity: duration
       intent: [duration_inform]
+    room_type:
+    - type: from_entity
+      entity: room_type
+      intent: [room_type_inform]
   
 actions:
 - validate_room_form

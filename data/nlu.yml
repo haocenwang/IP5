@@ -63,8 +63,10 @@ nlu:
 - intent: room_type_inform
   examples: |
     - I want to have a room with [computers](room_type)
-    - With [window and screen](room_type)
+    - With [window](room_type) and [screen](room_type)
     - with [screen](room_type)
+    - can i have a room with [screen](room_type)
+    - i want a room with [computer](room_type)
 
 - intent: request_room
   examples: |

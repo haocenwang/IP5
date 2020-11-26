@@ -7,14 +7,22 @@ from rasa_sdk.forms import FormAction
 from rasa_sdk import Action
 from rasa_sdk.events import SlotSet
 import dateutil.parser
-import pandas as pd
-
 
 class ValidateRoomForm(FormValidationAction):
     """Example of a form validation action."""
 
     def name(self) -> Text:
         return "validate_room_form"
+
+    @staticmethod
+    def room_type_db() -> List[Text]:
+        """Database of supported cuisines."""
+
+        return [
+            "window",
+            "computer",
+            "screen",
+        ]
 
     @staticmethod
     def is_int(string: Text) -> bool:
@@ -25,6 +33,26 @@ class ValidateRoomForm(FormValidationAction):
             return True
         except ValueError:
             return False
+
+    def validate_room_type(
+            self,
+            value: Text,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any],
+    ) -> Dict[Text, Any]:
+        """Validate room_type value."""
+
+        if value.lower() in self.room_type_db():
+            # validation succeeded, set the value of the "cuisine" slot to value
+            return {"room_type": value}
+        else:
+            dispatcher.utter_message(template="utter_wrong_room_type")
+            # validation failed, set this slot to None, meaning the
+            # user will be asked for the slot again
+            return {"cuisine": None}
+
+
     
     def validate_num_persons(
         self,
@@ -71,8 +99,3 @@ class ValidateRoomForm(FormValidationAction):
             return {"from_time":None}
          else:
             return {"from_date":date_temp,"from_time":time_temp}
-
-         
-
-        
-        
