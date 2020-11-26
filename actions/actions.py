@@ -142,6 +142,17 @@ class ValidateRoomForm(FormValidationAction):
             for i in range(1,len(db)):
                 if num_p <= db[i][1]:
                     temp_num_p.append(db[i])
+
+            temp_room_type = []
+            index = 0
+            for i in range(len(db[0])):
+                if room_type == db[0][i]:
+                    index = i
+
             for i in range(len(temp_num_p)):
-                dispatcher.utter_message(text="Possibilities are: " + str(temp_num_p[i][0]))
+                if temp_num_p[i][index] == 1:
+                    temp_room_type.append(temp_num_p[i])
+
+            for i in range(len(temp_room_type)):
+                dispatcher.utter_message(text="Possibilities are: " + str(temp_room_type[i][0]))
             return []
