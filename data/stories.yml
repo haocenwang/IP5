@@ -15,4 +15,6 @@ stories:
       - active_loop: room_form
       - active_loop: null
       - action: utter_slots_values
+      - action: utter_check_availability
+      - action: check_room_action
       

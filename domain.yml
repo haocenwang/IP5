@@ -55,7 +55,7 @@ responses:
   utter_ask_confirm:
     - text: "Your booking is confirmed"
   utter_slots_values:
-    - text: "You have successfully booked a room:\n
+    - text: "You booking information is:\n
              - num_persons: {num_persons}\n
              - date: {from_date}\n
              - from_time: {from_time}\n
@@ -67,6 +67,8 @@ responses:
     - text: "Please give me the extact time"
   utter_wrong_room_type:
     - text: "Wrong room type"
+  utter_check_availability:
+    - text: "I am going to check if there is any room fit for you"
 
 
 forms:
@@ -94,5 +96,5 @@ forms:
   
 actions:
 - validate_room_form
-- room_type_action
+- check_room_action
   

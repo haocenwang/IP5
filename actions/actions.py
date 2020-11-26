@@ -99,3 +99,38 @@ class ValidateRoomForm(FormValidationAction):
             return {"from_time":None}
          else:
             return {"from_date":date_temp,"from_time":time_temp}
+
+
+    class CheckRoom(Action):
+
+        def name(self) -> Text:
+            return 'check_room_action'
+
+        @staticmethod
+        def create_db():
+            elements = [['room_id','num_p','window','screen','computer'],
+                        [201,3,True,False,False],
+                        [301,4,True,True,True],
+                        [401,5,False,True,False],
+                        [501,7,True,False,True]]
+            return elements
+
+
+        def run(
+        self,
+        dispatcher,
+        tracker: Tracker,
+        domain: "DomainDict",
+    ) -> List[Dict[Text, Any]]:
+
+            num_p = tracker.get_slot('num_persons')
+            room_type = tracker.get_slot('room_type')
+            db = self.create_db()
+            temp = []
+
+            for i in range(1,len(db)):
+                if num_p <= db[i][1]:
+                    temp.append(db[i])
+            for i in range(len(temp)):
+                dispatcher.utter_message(text="Possibilities are: " + str(temp[i][0]))
+            return []
