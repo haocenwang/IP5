@@ -224,23 +224,33 @@ class ValidateRoomForm(FormValidationAction):
                 #find the room in timetable and check the time
                 index = timetable[0].index(room)
                 temp_timetable = []
+                new_timetable = []
                 for i in range(len(timetable)):
                     if (timetable[i][index] == date):
                         temp_timetable.append(timetable[i][index:index + 3])
 
-                for i in range(len(temp_timetable)):
-                    start = int(temp_timetable[i][1])
-                    end = int(temp_timetable[i][2])
-                    if (start < time_start < end):
-                        dispatcher.utter_message(text="there is meeting with this start time")
-                        booked = False
-                        break
-                    if (start < time_end < end):
-                        dispatcher.utter_message(text="here is meeting with this end time")
-                        booked = False
-                        break
+                if(len(temp_timetable)>0):
+                    for j in range(len(temp_timetable)):
+                        start = int(temp_timetable[j][1])
+                        end = int(temp_timetable[j][2])
+                        if (start < time_start < end):
+                            dispatcher.utter_message(text="there is meeting with this start time")
+                            booked = False
+                            break
+                        if (start < time_end < end):
+                            dispatcher.utter_message(text="here is meeting with this end time")
+                            booked = False
+                            break
+                        else:
+                            booked = True
+                else:
+                    booked = True
+
                 if (booked):
                     dispatcher.utter_message(text="Booking successfull")
+                else:
+                    dispatcher.utter_message(text="Booking unsuccessfull")
+
 
             return []
 
