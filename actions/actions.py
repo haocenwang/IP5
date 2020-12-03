@@ -281,5 +281,40 @@ class ValidateRoomForm(FormValidationAction):
                                                  + "On " + str(date) + " : " + str(start1)
                                                  + " - " + str(start2) + " is free")
                         break
+
+                room_without_type = []
+                for i in range(len(temp_num_p)):
+                    room_without_type.append(temp_num_p[i][0])
+
+                for j in range(len(rooms)):
+                    room_without_type.remove(rooms[j])
+
+                db_rooms = []
+                for k in range(len(room_without_type)):
+                    index = timetable[0].index(room_without_type[k])
+                    temp_elements = []
+                    for i in range(len(timetable)):
+                        if (timetable[i][index] == date):
+                            temp_elements.append(timetable[i][index:index + 3])
+                    booked = True
+                    p = 0
+                    if (len(temp_elements) != 0):
+                        for i in range(len(temp_elements)):
+                            start = int(temp_elements[i][1])
+                            end = int(temp_elements[i][2])
+                            if (start < int(time_start) < end):
+                                p = i
+                                booked = False
+                                break
+                            if (start < int(time_end) < end):
+                                p = i
+                                booked = False
+                                break
+
+                    else:
+                        dispatcher.utter_message(text= "Option 2: Room without " + str(room_without_type[k])
+                                                       + "(without " + room_type + ")" + " On " + str(date)
+                                                       + " : " + str(time_start) + " until " + str(time_end))
+
             return []
 
