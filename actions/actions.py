@@ -158,6 +158,7 @@ class ValidateRoomForm(FormValidationAction):
             db = self.create_room_db() #get the database of the room information
             temp_num_p = []
             booked = True
+            new_timetable = []
 
             #select all the rooms which the number of person is equal or bigger then required
             for i in range(1,len(db)):
@@ -176,55 +177,55 @@ class ValidateRoomForm(FormValidationAction):
                 if temp_num_p[i][index] == 1:
                     temp_room_type.append(temp_num_p[i])
 
+            timetable = self.create_timetable_db()
+            date_temp = tracker.get_slot('from_date')
+            date_temp = str.split(date_temp, '-')
+            date = ""
+
+            for i in range(len(date_temp)):
+                date += date_temp[i]
+            date = int(date)
+
+            year = int(date_temp[0])
+            month = int(date_temp[1])
+            day = int(date_temp[2])
+
+            time_temp = tracker.get_slot('from_time')
+            time_temp = str.split(time_temp, ":")
+            time_start = ""
+
+            for i in range(len(time_temp)):
+                time_start += time_temp[i];
+            time_start = int(time_start)
+
+            hour = int(time_temp[0])
+            minute = int(time_temp[1])
+            second = int(time_temp[2])
+
+            duration = tracker.get_slot('duration')
+
+            time = datetime.datetime(year, month, day, hour, minute, second) + datetime.timedelta(minutes=duration)
+
+            time_end = ""
+            time_int_temp = str(time.time())
+            time_int_temp = str.split(time_int_temp, ":")
+            for j in range(len(time_int_temp)):
+                time_end += time_int_temp[j]
+            time_end = int(time_end)
+
+            posistion = 0
+            rooms = []
+
             #only the rooms, which fits the requirement of the user, are left
             for i in range(len(temp_room_type)):
                 dispatcher.utter_message(text="Possibilities are: " + str(temp_room_type[i][0]))
-
+                rooms.append(temp_room_type[i][0])
                 #check the timetable whether this room is available or not
-                timetable = self.create_timetable_db()
                 room = int(temp_room_type[i][0])
-                date_temp = tracker.get_slot('from_date')
-                date_temp = str.split(date_temp,'-')
-                date = ""
-
-                for i in range(len(date_temp)):
-                    date += date_temp[i]
-                date = int(date)
-
-                year = int(date_temp[0])
-                month = int(date_temp[1])
-                day = int(date_temp[2])
-
-                time_temp = tracker.get_slot('from_time')
-                time_temp = str.split(time_temp, ":")
-                time_start = ""
-
-                for i in range(len(time_temp)):
-                    time_start += time_temp[i];
-                time_start = int(time_start)
-
-                hour = int(time_temp[0])
-                minute = int(time_temp[1])
-                second = int(time_temp[2])
-
-                duration = tracker.get_slot('duration')
-
-                time = datetime.datetime(year, month, day, hour, minute, second) + datetime.timedelta(minutes=duration)
-
-                time_end = ""
-                time_int_temp = str(time.time())
-                time_int_temp = str.split(time_int_temp, ":")
-                for j in range(len(time_int_temp)):
-                    time_end += time_int_temp[j]
-                time_end = int(time_end)
-
-                dispatcher.utter_message(text="Until Here all good: Date: " + str(date) + " Time Start: " + str(time_start)
-                                         + " Time End: " + str(time_end))
-
                 #find the room in timetable and check the time
                 index = timetable[0].index(room)
                 temp_timetable = []
-                new_timetable = []
+
                 for i in range(len(timetable)):
                     if (timetable[i][index] == date):
                         temp_timetable.append(timetable[i][index:index + 3])
@@ -234,23 +235,51 @@ class ValidateRoomForm(FormValidationAction):
                         start = int(temp_timetable[j][1])
                         end = int(temp_timetable[j][2])
                         if (start < time_start < end):
-                            dispatcher.utter_message(text="there is meeting with this start time")
+                            #dispatcher.utter_message(text="there is meeting with this start time")
+                            posistion = j
                             booked = False
                             break
                         if (start < time_end < end):
-                            dispatcher.utter_message(text="here is meeting with this end time")
+                            #dispatcher.utter_message(text="here is meeting with this end time")
+                            posistion = j
                             booked = False
                             break
-                        else:
-                            booked = True
                 else:
                     booked = True
+                    new_timetable.append([room,date,time_start,time_end,room_type])
 
-                if (booked):
-                    dispatcher.utter_message(text="Booking successfull")
-                else:
-                    dispatcher.utter_message(text="Booking unsuccessfull")
-
-
+            if (len(new_timetable)>0):
+                dispatcher.utter_message(text="Booking successfull")
+                for i in range(len(new_timetable)):
+                    dispatcher.utter_message(text="Room: " + str(new_timetable[i][0]) + " Date: " + str(date)
+                                             + " - " +  str(time) + " until " + str(time_end))
+            else:
+                dispatcher.utter_message(text="Sorry. There is no room available according to your requirement")
+                dispatcher.utter_message(text="I am going to look some Options for you")
+                temp_newtime = []
+                for i in range(len(rooms)):
+                    if (posistion == 0):
+                        if (temp_timetable[0][1] != 80000):
+                            start = 80000
+                            end = temp_timetable[0][1]
+                            dispatcher.utter_message(text="Option 1: " + "Room " + str(rooms[i])
+                                                          + " On " + str(date) + " : " + str(start)
+                                                          + " until " + str(end) + " is free")
+                        else:
+                            start = temp_timetable[0][2]
+                            end = temp_timetable[1][1]
+                            dispatcher.utter_message(text="Option 1: " + "Room " + str(room[i])
+                                                          + "On " + str(date) + " : " + str(start)
+                                                          + " - " + str(end) + " is free")
+                    else:
+                        dispatcher.utter_message(text="else")
+                        start1 = temp_timetable[posistion - 1][2]
+                        end1 = temp_timetable[posistion][1]
+                        start2 = temp_timetable[posistion][2]
+                        end2 = temp_timetable[posistion + 1][1]
+                        dispatcher.utter_message(text="Option 1: " + "Room " + str(room[i])
+                                                 + "On " + str(date) + " : " + str(start1)
+                                                 + " - " + str(start2) + " is free")
+                        break
             return []
 

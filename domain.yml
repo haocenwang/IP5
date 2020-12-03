@@ -9,6 +9,9 @@ intents:
 - from_time_inform
 - duration_inform
 - room_type_inform
+- screen
+- window
+- computer
 
 
 entities:
@@ -92,7 +95,7 @@ forms:
     room_type:
     - type: from_entity
       entity: room_type
-      intent: [room_type_inform]
+      intent: [room_type_inform,screen,window,computer]
   
 actions:
 - validate_room_form

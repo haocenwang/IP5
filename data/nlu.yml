@@ -45,6 +45,7 @@ nlu:
     - after tomorrow
     - on 2020-11-26
 
+
 - intent: from_time_inform
   examples: |
     - at 3pm
@@ -60,13 +61,30 @@ nlu:
     - 30 minutes
     - half hour
 
+- intent: screen
+  examples: |
+    - with [screen](room_type)
+    - i want to have a room with [screen](room_type)
+    - [screen](room_type)
+
+- intent: window
+  examples: |
+    - with [window](room_type)
+    - i want to have a room with [window](room_type)
+    - [window](room_type)
+
+- intent: computer
+  examples: |
+    - with [computer](room_type)
+    - i want to have a room with [computer](room_type)
+    - [computer](room_type)
+
 - intent: room_type_inform
   examples: |
-    - I want to have a room with [computers](room_type)
+    - I want to have a room with [computer](room_type) and [screen](room_type)
     - With [window](room_type) and [screen](room_type)
-    - with [screen](room_type)
-    - can i have a room with [screen](room_type)
-    - i want a room with [computer](room_type)
+    - [window](room_type) and [screen](room_type)
+
 
 - intent: request_room
   examples: |
