@@ -294,7 +294,7 @@ class ValidateRoomForm(FormValidationAction):
                             ],
                         },
                     }
-                    quickstart.api(create_event)
+                    quickstart.postapi(create_event)
             else:
                 dispatcher.utter_message(text="Sorry. There is no room available according to your requirement")
                 dispatcher.utter_message(text="I am going to look some Options for you")
