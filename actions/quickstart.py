@@ -12,7 +12,7 @@ SCOPES = ['https://www.googleapis.com/auth/calendar']
 
 
 
-def api():
+def api(create_evnets):
     """Shows basic usage of the Google Calendar API.
     Prints the start and name of the next 10 events on the user's calendar.
     """
@@ -44,8 +44,8 @@ def api():
                                         maxResults=100, singleEvents=True,
                                         orderBy='startTime').execute()
     events = events_result.get('items', [])
-    json_string = json.dumps(events)
-    print(json_string)
+    #json_string = json.dumps(events)
+    #print(json_string)
 
     if not events:
         print('No upcoming events found.')
@@ -53,7 +53,7 @@ def api():
         start = event['start'].get('dateTime', event['start'].get('date'))
         print(start, event['summary'])
 
-    event = {
+    create_event = {
         'summary': 'First Event Add',
         'location': '800 Howard St., San Francisco, CA 94103',
         'description': 'A chance to hear more about Google\'s developer products.',
@@ -81,5 +81,6 @@ def api():
         },
     }
 
-    event = service.events().insert(calendarId='primary', body=event).execute()
+    event = service.events().insert(calendarId='primary', body=create_evnets).execute()
     print('Event created: %s' % (event.get('htmlLink')))
+

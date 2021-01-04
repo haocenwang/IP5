@@ -9,7 +9,9 @@ from rasa_sdk.events import SlotSet
 import dateutil.parser
 import csv
 import datetime
-from quickstart import main
+
+from actions import quickstart
+
 
 class ValidateRoomForm(FormValidationAction):
     """Example of a form validation action."""
@@ -30,7 +32,6 @@ class ValidateRoomForm(FormValidationAction):
     @staticmethod
     def is_int(string: Text) -> bool:
         """Check if a string is an integer."""
-
         try:
             int(string)
             return True
@@ -154,7 +155,7 @@ class ValidateRoomForm(FormValidationAction):
         tracker: Tracker,
         domain: "DomainDict",
     ) -> List[Dict[Text, Any]]:
-
+            #quickstart.api()
             num_p = tracker.get_slot('num_persons')
             room_type = tracker.get_slot('room_type')
             db = self.create_room_db() #get the database of the room information
@@ -254,7 +255,46 @@ class ValidateRoomForm(FormValidationAction):
                 dispatcher.utter_message(text="Booking successfull")
                 for i in range(len(new_timetable)):
                     dispatcher.utter_message(text="Room: " + str(new_timetable[i][0]) + " Date: " + str(date)
-                                             + " - " +  str(time) + " until " + str(time_end))
+                                             + " - " +  str(time_start) + " until " + str(time_end))
+                    date_temp = str(date)
+                    date_temp = date_temp[:4] + "-" + date_temp[4:]
+                    date = date_temp[:7] + "-" + date_temp[7:]
+
+                    time_temp = str(time_start)
+                    time_temp = time_temp[:2] + ":" + time_temp[2:]
+                    start = time_temp[:5] + ":" + time_temp[5:]
+
+                    time_temp = str(time_end)
+                    time_temp = time_temp[:2] + ":" + time_temp[2:]
+                    end = time_temp[:5] + ":" + time_temp[5:]
+
+                    dispatcher.utter_message(date + " " + start + " " + end)
+                    create_event = {
+                        'summary': 'Meeting',
+                        'location': 'Room: ' + str(new_timetable[i][0]),
+                        'description': '',
+                        'start': {
+                            'dateTime': date + 'T' + start,
+                            'timeZone': 'Europe/Zurich',
+                        },
+                        'end': {
+                            'dateTime': date + 'T' + end,
+                            'timeZone': 'Europe/Zurich',
+                        },
+
+                        'attendees': [
+                            {'email': 'lpage@example.com'},
+                            {'email': 'sbrin@example.com'},
+                        ],
+                        'reminders': {
+                            'useDefault': False,
+                            'overrides': [
+                                {'method': 'email', 'minutes': 24 * 60},
+                                {'method': 'popup', 'minutes': 10},
+                            ],
+                        },
+                    }
+                    quickstart.api(create_event)
             else:
                 dispatcher.utter_message(text="Sorry. There is no room available according to your requirement")
                 dispatcher.utter_message(text="I am going to look some Options for you")
