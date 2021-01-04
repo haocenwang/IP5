@@ -9,6 +9,7 @@ from rasa_sdk.events import SlotSet
 import dateutil.parser
 import csv
 import datetime
+from quickstart import main
 
 class ValidateRoomForm(FormValidationAction):
     """Example of a form validation action."""
@@ -131,6 +132,7 @@ class ValidateRoomForm(FormValidationAction):
 
         @staticmethod
         def create_timetable_db():
+            #http request
             with open('/Users/haoce/Documents/IP5/data/timetable.csv', 'r') as f:
                 mycsv = list(csv.reader(f))
                 elements = []
