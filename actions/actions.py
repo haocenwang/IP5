@@ -155,7 +155,7 @@ class ValidateRoomForm(FormValidationAction):
         tracker: Tracker,
         domain: "DomainDict",
     ) -> List[Dict[Text, Any]]:
-            #quickstart.api()
+            #quickstart.getapi()
             num_p = tracker.get_slot('num_persons')
             room_type = tracker.get_slot('room_type')
             db = self.create_room_db() #get the database of the room information

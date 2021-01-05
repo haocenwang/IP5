@@ -5,7 +5,6 @@ import os.path
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
-import json
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/calendar']
@@ -66,11 +65,39 @@ def getapi():
     #json_string = json.dumps(events)
     #print(json_string)
 
+    timetable = []
+    index = 0
     if not events:
         print('No upcoming events found.')
     for event in events:
+        room_id = []
         start = event['start'].get('dateTime', event['start'].get('date'))
-        print(start, event['location'])
+        room = event['location']
+        room_id.append(room)
+        if (timetable.__contains__(room_id) == False):
+            timetable.append(room_id)
+        index += 1
 
+    for i in range(len(timetable)):
+        loc = timetable[i]
+        print(timetable[i])
+        for event in events:
+            room = event['location']
+            # print(room)
+            if (room == loc[0]):
+                start = event['start'].get('dateTime', event['start'].get('date'))
+                date_start = start[:10]
+                date_start = date_start.translate({ord('-'): None})
+                start_time = start[11:19]
+                start_time = int(date_start + start_time.translate({ord(':'): None}))
+                end = event['end'].get('dateTime', event['end'].get('date'))
+                date_end = end[:10]
+                date_end = date_end.translate({ord('-'): None})
+                end_time = end[11:19]
+                end_time = int(date_end + end_time.translate({ord(':'): None}))
+                timetable[i].append(start_time)
+                timetable[i].append(end_time)
+
+    print(timetable)
 
 
