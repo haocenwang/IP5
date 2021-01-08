@@ -80,7 +80,7 @@ def getapi():
 
     for i in range(len(timetable)):
         loc = timetable[i]
-        print(timetable[i])
+        #print(timetable[i])
         for event in events:
             room = event['location']
             # print(room)
@@ -98,6 +98,7 @@ def getapi():
                 timetable[i].append(start_time)
                 timetable[i].append(end_time)
 
-    print(timetable)
+    #print(timetable)
+    return timetable
 
 

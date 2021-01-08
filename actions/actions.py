@@ -56,56 +56,51 @@ class ValidateRoomForm(FormValidationAction):
             # user will be asked for the slot again
             return {"cuisine": None}
 
-
-    
     def validate_num_persons(
-        self,
-        value: Text,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: Dict[Text, Any],
+            self,
+            value: Text,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any],
     ) -> Dict[Text, Any]:
         """Validate num_people value."""
 
         if self.is_int(value) and int(value) > 0:
-            return {"num_persons": value}  
+            return {"num_persons": value}
         else:
             dispatcher.utter_message(template="utter_wrong_num_persons")
             # validation failed, set slot to None
             return {"num_persons": None}
 
     def validate_from_date(
-        self,
-        value: Text,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: Dict[Text, Any],
+            self,
+            value: Text,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any],
     ) -> Dict[Text, Any]:
-         """Validate from_date value."""
-         date = tracker.get_slot('from_date')
-         date_temp = date[0:10]
-         
-         return {"from_date":date_temp}
-    
+        """Validate from_date value."""
+        date = tracker.get_slot('from_date')
+        date_temp = date[0:10]
+
+        return {"from_date": date_temp}
+
     def validate_from_time(
-        self,
-        value: Text,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: Dict[Text, Any],
+            self,
+            value: Text,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any],
     ) -> Dict[Text, Any]:
-         """Validate from_date value."""
-         date = tracker.get_slot('from_time')
-         date_temp = date[0:10]
-         time_temp = date[11:19]
+        """Validate from_date value."""
+        date = tracker.get_slot('from_time')
+        date_temp = date[0:10]
+        time_temp = date[11:19]
 
-         if time_temp == "00:00:00":
-            return {"from_time":None}
-         else:
-            return {"from_date":date_temp,"from_time":time_temp}
-
-
-
+        if time_temp == "00:00:00":
+            return {"from_time": None}
+        else:
+            return {"from_date": date_temp, "from_time": time_temp}
 
     class CheckRoom(Action):
 
@@ -133,7 +128,7 @@ class ValidateRoomForm(FormValidationAction):
 
         @staticmethod
         def create_timetable_db():
-            #http request
+            # http request
             with open('/Users/haoce/Documents/IP5/data/timetable.csv', 'r') as f:
                 mycsv = list(csv.reader(f))
                 elements = []
@@ -148,28 +143,27 @@ class ValidateRoomForm(FormValidationAction):
 
                 return elements
 
-
         def run(
-        self,
-        dispatcher,
-        tracker: Tracker,
-        domain: "DomainDict",
-    ) -> List[Dict[Text, Any]]:
-            #quickstart.getapi()
+                self,
+                dispatcher,
+                tracker: Tracker,
+                domain: "DomainDict",
+        ) -> List[Dict[Text, Any]]:
+            # quickstart.getapi()
             num_p = tracker.get_slot('num_persons')
             room_type = tracker.get_slot('room_type')
-            db = self.create_room_db() #get the database of the room information
+            db = self.create_room_db()  # get the database of the room information
             temp_num_p = []
             booked = True
             new_timetable = []
 
-            #select all the rooms which the number of person is equal or bigger then required
-            for i in range(1,len(db)):
+            # select all the rooms which the number of person is equal or bigger then required
+            for i in range(1, len(db)):
                 if num_p <= db[i][1]:
                     temp_num_p.append(db[i])
 
-            #select the room type which is required
-            #1 means true, 0 means false
+            # select the room type which is required
+            # 1 means true, 0 means false
             temp_room_type = []
             index = 0
             for i in range(len(db[0])):
@@ -180,26 +174,30 @@ class ValidateRoomForm(FormValidationAction):
                 if temp_num_p[i][index] == 1:
                     temp_room_type.append(temp_num_p[i])
 
-            timetable = self.create_timetable_db()
+            ######################
+            # timetable = self.create_timetable_db()
+            timetable = quickstart.getapi()
+            #dispatcher.utter_message(text="length: " + str(len(timetable)))
             date_temp = tracker.get_slot('from_date')
+            time_temp = tracker.get_slot('from_time')
+
             date_temp = str.split(date_temp, '-')
             date = ""
 
             for i in range(len(date_temp)):
                 date += date_temp[i]
-            date = int(date)
+            # date = int(date)
 
             year = int(date_temp[0])
             month = int(date_temp[1])
             day = int(date_temp[2])
 
-            time_temp = tracker.get_slot('from_time')
             time_temp = str.split(time_temp, ":")
             time_start = ""
 
             for i in range(len(time_temp)):
                 time_start += time_temp[i];
-            time_start = int(time_start)
+            # time_start = int(time_start)
 
             hour = int(time_temp[0])
             minute = int(time_temp[1])
@@ -214,48 +212,54 @@ class ValidateRoomForm(FormValidationAction):
             time_int_temp = str.split(time_int_temp, ":")
             for j in range(len(time_int_temp)):
                 time_end += time_int_temp[j]
-            time_end = int(time_end)
+            # time_end = int(time_end)
 
+            eventstart = int(date + time_start)
+            eventend = int(date + time_end)
             posistion = 0
             rooms = []
+            room_timetable = []
+            booked = True
 
-            #only the rooms, which fits the requirement of the user, are left
+            # only the rooms, which fits the requirement of the user, are left
             for i in range(len(temp_room_type)):
                 dispatcher.utter_message(text="Possibilities are: " + str(temp_room_type[i][0]))
-                rooms.append(temp_room_type[i][0])
-                #check the timetable whether this room is available or not
-                room = int(temp_room_type[i][0])
-                #find the room in timetable and check the time
-                index = timetable[0].index(room)
-                temp_timetable = []
-
+                rooms.append("Room: " + str(temp_room_type[i][0]))
+                # check the timetable whether this room is available or not
+                room = "Room: " + str(temp_room_type[i][0])
+                index = -1;
+                # find the room in timetable and check the time
                 for i in range(len(timetable)):
-                    if (timetable[i][index] == date):
-                        temp_timetable.append(timetable[i][index:index + 3])
+                    if (timetable[i][0] == room):
+                        index = i
+                if(index!=-1):
+                    room_timetable.append(timetable[index])
+                    room_timetable = room_timetable[0]
+                    print(room_timetable)
 
-                if(len(temp_timetable)>0):
-                    for j in range(len(temp_timetable)):
-                        start = int(temp_timetable[j][1])
-                        end = int(temp_timetable[j][2])
-                        if (start < time_start < end):
-                            #dispatcher.utter_message(text="there is meeting with this start time")
-                            posistion = j
+                start_index = 0
+                if (len(room_timetable) > 0):
+                    temp_timetable = room_timetable[1:]
+                    while (start_index < len(temp_timetable)):
+                        if ((temp_timetable[start_index] < eventstart) &
+                                (temp_timetable[start_index + 1] > eventstart)):
                             booked = False
+                            dispatcher.utter_message(text="Start Time Conflict")
                             break
-                        if (start < time_end < end):
-                            #dispatcher.utter_message(text="here is meeting with this end time")
-                            posistion = j
+                        else:
+                            start_index += 2
+                    start_index = 0;
+                    while (start_index < len(temp_timetable) - 1):
+                        if ((temp_timetable[start_index] < eventend) &
+                                (temp_timetable[start_index + 1] > eventend)):
                             booked = False
+                            dispatcher.utter_message(text="End Time Conflict")
                             break
-                else:
-                    booked = True
-                    new_timetable.append([room,date,time_start,time_end,room_type])
+                        else:
+                            start_index += 2
 
-            if (len(new_timetable)>0):
-                dispatcher.utter_message(text="Booking successfull")
-                for i in range(len(new_timetable)):
-                    dispatcher.utter_message(text="Room: " + str(new_timetable[i][0]) + " Date: " + str(date)
-                                             + " - " +  str(time_start) + " until " + str(time_end))
+                if(booked==True):
+                    dispatcher.utter_message(text="Booking successfull")
                     date_temp = str(date)
                     date_temp = date_temp[:4] + "-" + date_temp[4:]
                     date = date_temp[:7] + "-" + date_temp[7:]
@@ -269,9 +273,10 @@ class ValidateRoomForm(FormValidationAction):
                     end = time_temp[:5] + ":" + time_temp[5:]
 
                     dispatcher.utter_message(date + " " + start + " " + end)
+
                     create_event = {
                         'summary': 'Meeting',
-                        'location': 'Room: ' + str(new_timetable[i][0]),
+                        'location': str(room_timetable[0][0]),
                         'description': '',
                         'start': {
                             'dateTime': date + 'T' + start,
@@ -295,68 +300,9 @@ class ValidateRoomForm(FormValidationAction):
                         },
                     }
                     quickstart.postapi(create_event)
-            else:
-                dispatcher.utter_message(text="Sorry. There is no room available according to your requirement")
-                dispatcher.utter_message(text="I am going to look some Options for you")
-                temp_newtime = []
-                for i in range(len(rooms)):
-                    if (posistion == 0):
-                        if (temp_timetable[0][1] != 80000):
-                            start = 80000
-                            end = temp_timetable[0][1]
-                            dispatcher.utter_message(text="Option 1: " + "Room " + str(rooms[i])
-                                                          + " On " + str(date) + " : " + str(start)
-                                                          + " until " + str(end) + " is free")
-                        else:
-                            start = temp_timetable[0][2]
-                            end = temp_timetable[1][1]
-                            dispatcher.utter_message(text="Option 1: " + "Room " + str(room[i])
-                                                          + "On " + str(date) + " : " + str(start)
-                                                          + " - " + str(end) + " is free")
-                    else:
-                        dispatcher.utter_message(text="else")
-                        start1 = temp_timetable[posistion - 1][2]
-                        end1 = temp_timetable[posistion][1]
-                        start2 = temp_timetable[posistion][2]
-                        end2 = temp_timetable[posistion + 1][1]
-                        dispatcher.utter_message(text="Option 1: " + "Room " + str(room[i])
-                                                 + "On " + str(date) + " : " + str(start1)
-                                                 + " - " + str(start2) + " is free")
-                        break
-
-                room_without_type = []
-                for i in range(len(temp_num_p)):
-                    room_without_type.append(temp_num_p[i][0])
-
-                for j in range(len(rooms)):
-                    room_without_type.remove(rooms[j])
-
-                db_rooms = []
-                for k in range(len(room_without_type)):
-                    index = timetable[0].index(room_without_type[k])
-                    temp_elements = []
-                    for i in range(len(timetable)):
-                        if (timetable[i][index] == date):
-                            temp_elements.append(timetable[i][index:index + 3])
-                    booked = True
-                    p = 0
-                    if (len(temp_elements) != 0):
-                        for i in range(len(temp_elements)):
-                            start = int(temp_elements[i][1])
-                            end = int(temp_elements[i][2])
-                            if (start < int(time_start) < end):
-                                p = i
-                                booked = False
-                                break
-                            if (start < int(time_end) < end):
-                                p = i
-                                booked = False
-                                break
-
-                    else:
-                        dispatcher.utter_message(text= "Option 2: Room without " + str(room_without_type[k])
-                                                       + "(without " + room_type + ")" + " On " + str(date)
-                                                       + " : " + str(time_start) + " until " + str(time_end))
+                    break
+                else:
+                    dispatcher.utter_message(text="Booking Unsuccessfull")
 
             return []
 
