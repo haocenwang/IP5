@@ -99,3 +99,12 @@ nlu:
     - i want to book a room for 3 people next Tuesday at 3pm
     - i want to book a room for 3 people
     - i want to book a room for 4 people next Monday
+
+- intent: choose_option
+  examples: |
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5

@@ -12,6 +12,7 @@ intents:
 - screen
 - window
 - computer
+- choose_option
 
 
 entities:
@@ -38,6 +39,10 @@ slots:
     influence_conversation: false
     auto_fill: false
   duration:
+    type: float
+    influence_conversation: false
+    auto_fill: false
+  num_option:
     type: float
     influence_conversation: false
     auto_fill: false
@@ -72,6 +77,16 @@ responses:
     - text: "Wrong room type"
   utter_check_availability:
     - text: "I am going to check if there is any room fit for you"
+  utter_ask_num_option:
+    - text: "Choose a number of options, 0 exit"
+  utter_slots_option_values:
+    - text: "You booking information is:\n
+               - num_persons: {num_persons}\n
+               - date: {from_date}\n
+               - from_time: {from_time}\n
+               - duration: {duration}\n
+               - room_type: {room_type}\n
+               - num_option: {num_option}"
 
 
 forms:
@@ -96,8 +111,15 @@ forms:
     - type: from_entity
       entity: room_type
       intent: [room_type_inform,screen,window,computer]
+  booking_form:
+    num_option:
+    - type: from_entity
+      entity: number
+      intent: [choose_option]
+
   
 actions:
 - validate_room_form
 - check_room_action
+- validate_booking_form
   

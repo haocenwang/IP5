@@ -17,4 +17,9 @@ stories:
       - action: utter_slots_values
       - action: utter_check_availability
       - action: check_room_action
-      
+      - active_loop: check_room_action
+      - active_loop: null
+      - action: utter_ask_num_option
+      - intent: choose_option
+      - action: booking_form
+      - action: utter_slots_option_values

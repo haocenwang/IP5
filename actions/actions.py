@@ -1,5 +1,6 @@
 from typing import Dict, Text, Any, List, Union
 
+from rasa.shared.core.events import UserUttered
 from rasa_sdk import Tracker
 from rasa_sdk.executor import CollectingDispatcher
 from rasa_sdk.forms import FormValidationAction
@@ -102,7 +103,9 @@ class ValidateRoomForm(FormValidationAction):
         else:
             return {"from_date": date_temp, "from_time": time_temp}
 
-    class CheckRoom(Action):
+
+
+class CheckRoom(Action):
 
         def name(self) -> Text:
             return 'check_room_action'
@@ -174,10 +177,8 @@ class ValidateRoomForm(FormValidationAction):
                 if temp_num_p[i][index] == 1:
                     temp_room_type.append(temp_num_p[i])
 
-            ######################
-            # timetable = self.create_timetable_db()
+            #get all the data from api
             timetable = quickstart.getapi()
-            #dispatcher.utter_message(text="length: " + str(len(timetable)))
             date_temp = tracker.get_slot('from_date')
             time_temp = tracker.get_slot('from_time')
 
@@ -186,7 +187,6 @@ class ValidateRoomForm(FormValidationAction):
 
             for i in range(len(date_temp)):
                 date += date_temp[i]
-            # date = int(date)
 
             year = int(date_temp[0])
             month = int(date_temp[1])
@@ -197,7 +197,6 @@ class ValidateRoomForm(FormValidationAction):
 
             for i in range(len(time_temp)):
                 time_start += time_temp[i];
-            # time_start = int(time_start)
 
             hour = int(time_temp[0])
             minute = int(time_temp[1])
@@ -276,7 +275,7 @@ class ValidateRoomForm(FormValidationAction):
 
                     create_event = {
                         'summary': 'Meeting',
-                        'location': str(room_timetable[0][0]),
+                        'location': str(room_timetable[0]),
                         'description': '',
                         'start': {
                             'dateTime': date + 'T' + start,
@@ -302,7 +301,115 @@ class ValidateRoomForm(FormValidationAction):
                     quickstart.postapi(create_event)
                     break
                 else:
-                    dispatcher.utter_message(text="Booking Unsuccessfull")
+                    continue
+            if(booked==False):
+                dispatcher.utter_message(text="Sorry. There is no room available according to your requirement")
+                dispatcher.utter_message(text="I am going to look some Options for you")
+
+                start = int(date + '080000')
+                end = int(date + '200000')
+                #print(start)
+                #print(end)
+                temp_time = []
+                temp_timetable = room_timetable[1:]
+                print(temp_timetable)
+                for i in range(len(temp_timetable)):
+                    if ((int(temp_timetable[i]) >= start) & (int(temp_timetable[i]) <= end)):
+                        temp_time.append(int(temp_timetable[i]))
+                #print(temp_time)
+
+                option_time_start = []
+                option_time_end = []
+
+                if (temp_time.__contains__(start)):
+                    index = 1;
+                    while (index < len(temp_time)):
+                        option_time_start.append(temp_time[index])
+                        index += 2
+                else:
+                    option_time_start.append(start)
+                    index = 1
+                    while (index < len(temp_time)):
+                        option_time_start.append(temp_time[index])
+                        index += 2
+
+                #print(option_time_start)
+
+                if (temp_time.__contains__(end)):
+                    if (option_time_start.__contains__(start)):
+                        index = 0
+                        while (index < len(temp_time)):
+                            option_time_end.append(temp_time[index])
+                            index += 2
+                    else:
+                        index = 0
+                        while (index < len(temp_time)):
+                            option_time_end.append(temp_time[index])
+                            index += 2
+
+                else:
+                    if (option_time_start.__contains__(start)):
+                        index = 0
+                        while (index < len(temp_time)):
+                            option_time_end.append(temp_time[index])
+                            index += 2
+                    else:
+                        index = 2
+                        while (index < len(temp_time)):
+                            option_time_end.append(temp_time[index])
+                            index += 2
+                    option_time_end.append(end)
+                    #print(option_time_end)
+
+                if (len(option_time_start) > len(option_time_end)):
+                    option_time_start = option_time_start[:-1]
+
+                index = 1
+                for i in range(len(option_time_start)):
+                    start = str(option_time_start[i])
+                    start = start[8:]
+                    start_time = datetime.time(int(start[:2]), int(start[2:4]), int(start[4:]))
+                    end = str(option_time_end[i])
+                    end = end[8:]
+                    end_time = datetime.time(int(end[:2]), int(end[2:4]), int(end[4:]))
+                    dispatcher.utter_message("Option " + str(index) + " between " + str(start_time)
+                          + " and " + str(end_time))
+                    index += 1
 
             return []
+
+
+class ValidateNumOption(FormValidationAction):
+
+    def name(self) -> Text:
+        return 'validate_booking_form'
+
+    @staticmethod
+    def is_int(string: Text) -> bool:
+        """Check if a string is an integer."""
+        try:
+            int(string)
+            return True
+        except ValueError:
+            return False
+
+    def validate_num_option(
+            self,
+            value: Text,
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any],
+    ) -> Dict[Text, Any]:
+        """Validate num_people value."""
+
+        if self.is_int(value) and int(value) >= 0:
+            dispatcher.utter_message(text=str(value))
+            return {"num_option": value}
+        else:
+            dispatcher.utter_message(text="Wrong Number")
+            # validation failed, set slot to None
+            return {"num_option": None}
+
+
+
 
