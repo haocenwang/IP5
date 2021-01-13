@@ -122,4 +122,5 @@ actions:
 - validate_room_form
 - check_room_action
 - validate_booking_form
+- confirm_booking_action
   
