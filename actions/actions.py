@@ -488,7 +488,17 @@ class BookingConfirm(Action):
             print(start)
             print(end)
 
+            start = str(start)
+            start = start.split()
+            date = start[0]
+            start = start[1]
+            end = str(end)
+            end = end.split()
+            end = end[1]
             room = string[2] + " " + string[3]
+            print(start)
+            print(end)
+            print(room)
             create_event = {
                 'summary': 'Meeting',
                 'location': room,
