@@ -1,0 +1,93 @@
+stories:
+- story: happy path 1
+  steps:
+  - user: |
+      hello
+    intent: greet
+  - action: utter_greet
+
+- story: validate data 1
+  steps:
+  - user: |
+      hello
+    intent: greet
+  - action: utter_greet
+  - user: |
+      book a room
+    intent: request_room
+  - action: room_form
+  - active_loop: room_form
+  - user: |
+      we are [4](number)
+    intent: num_p_inform
+  - action: room_form
+  - user: |
+      [next Tuesday]{"entity": "time", "value": "2021-03-30T00:00:00.000+02:00"}
+    intent: date_inform
+  - action: room_form
+  - user: |
+      [at 3pm]{"entity": "time", "value": "2021-03-26T15:00:00.000+01:00"}
+    intent: from_time_inform
+  - action: room_form
+  - user: |
+      [120 minutes]{"entity": "duration", "value": "120"}
+    intent: duration_inform
+  - action: room_form
+  - user: |
+      screen: with [screen](room_type)
+    intent: screen
+  - action: room_form
+  - active_loop: null
+  - action: utter_slots_values
+  - action: utter_check_availability
+  - action: check_room_action
+
+
+- story: validate data 2
+  steps:
+  - user: |
+      hello
+    intent: greet
+  - action: utter_greet
+  - user: |
+      book a room
+    intent: request_room
+  - action: room_form
+  - active_loop: room_form
+  - user: |
+      we are [4](number)
+    intent: num_p_inform
+  - action: room_form
+  - user: |
+      [next Wednesday]{"entity": "time", "value": "2021-03-31T00:00:00.000+02:00"}
+    intent: date_inform
+  - action: room_form
+  - user: |
+      [at 3pm]{"entity": "time", "value": "2021-03-26T15:00:00.000+01:00"}
+    intent: from_time_inform
+  - action: room_form
+  - user: |
+      [30 minutes]{"entity": "duration", "value": "30"}
+    intent: duration_inform
+  - action: room_form
+  - user: |
+      screen: with [screen](room_type)
+    intent: screen
+  - action: room_form
+  - active_loop: null
+  - action: utter_slots_values
+  - action: utter_check_availability
+  - action: check_room_action
+  - active_loop: check_room_action
+  - active_loop: null
+  - user: |
+      [1](number)
+    intent: choose_option
+  - action: booking_form
+  - active_loop: booking_form
+  - active_loop: null
+  - action: confirm_booking_action
+
+
+
+

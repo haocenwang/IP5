@@ -1,0 +1,27 @@
+version: "2.0"
+
+stories:
+  - story: greeting
+    steps:
+      - intent: greet
+      - action: utter_greet
+  
+  - story: book room complete
+    steps:
+      - intent: greet
+      - action: utter_greet
+      - intent: request_room
+      - action: room_form
+      - active_loop: room_form
+      - active_loop: null
+      - action: utter_slots_values
+      - action: utter_check_availability
+      - action: check_room_action
+      - active_loop: check_room_action
+      - active_loop: null
+      - intent: choose_option
+      - action: booking_form
+      - active_loop: booking_form
+      - active_loop: null
+      - action: confirm_booking_action
+

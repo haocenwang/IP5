@@ -1,0 +1,42 @@
+[
+  {
+    "text": "I want to book a meeting room now",
+    "intent": "date_inform",
+    "intent_prediction": {
+      "name": "request_room",
+      "confidence": 0.21700496971607208
+    }
+  },
+  {
+    "text": "at 11",
+    "intent": "from_time_inform",
+    "intent_prediction": {
+      "name": "choose_option",
+      "confidence": 0.36488068103790283
+    }
+  },
+  {
+    "text": "We need 1 hour",
+    "intent": "duration_inform",
+    "intent_prediction": {
+      "name": "num_p_inform",
+      "confidence": 0.4036409258842468
+    }
+  },
+  {
+    "text": "i want to have a room with screen",
+    "intent": "screen",
+    "intent_prediction": {
+      "name": "window",
+      "confidence": 0.3540809154510498
+    }
+  },
+  {
+    "text": "i want to have a room with computer",
+    "intent": "computer",
+    "intent_prediction": {
+      "name": "window",
+      "confidence": 0.37563690543174744
+    }
+  }
+]

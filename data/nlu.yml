@@ -1,0 +1,109 @@
+version: "2.0"
+
+nlu:
+- intent: greet
+  examples: |
+    - Hi
+    - Hey
+    - Hi bot
+    - Hey bot
+    - Hello
+    - Good morning
+    - hi Mister
+    - hi there
+    - greetings
+    - hello is anybody there
+    - hello robot
+    - hallo
+    - heeey
+    - hi hi
+    - hey
+    - hey hey
+    - hello there
+    - hi
+    - hello
+    - yo
+    - hola
+    - hi?
+    - hey bot!
+    - hello friend
+
+- intent: num_p_inform
+  examples: |
+    - We are 4
+    - There are 3
+    - only 2
+    - we are -3
+    - we are -1
+    - we are 0
+    - we are -2
+
+- intent: date_inform
+  examples: |
+    - after tomorrow at 14:15
+    - next Tuesday
+    - Now
+    - I want to book a meeting room now
+    - tomorrow
+    - after tomorrow
+    - on 2020-11-26
+    - today
+    - next Wednesday
+
+
+- intent: from_time_inform
+  examples: |
+    - at 3pm
+    - at 11:30
+    - at 11
+    - at 3 afternoon
+
+- intent: duration_inform
+  examples: |
+    - We need 1 hour
+    - About 30 minutes
+    - 2 and half hours
+    - 30 minutes
+    - half hour
+
+- intent: screen
+  examples: |
+    - with [screen](room_type)
+    - i want to have a room with [screen](room_type)
+    - [screen](room_type)
+
+- intent: window
+  examples: |
+    - with [window](room_type)
+    - i want to have a room with [window](room_type)
+    - [window](room_type)
+
+- intent: computer
+  examples: |
+    - with [computer](room_type)
+    - i want to have a room with [computer](room_type)
+    - [computer](room_type)
+
+
+- intent: request_room
+  examples: |
+    - i want to book a room
+    - i would like to book a room
+    - i want to make a reservation for a meeting room
+    - book a room
+    - make a reservation
+    - book a meeting room
+    - meeting room pleasse
+    - i want to book a room next Tuesday at 3pm
+    - i want to book a room for 3 people next Tuesday at 3pm
+    - i want to book a room for 3 people
+    - i want to book a room for 4 people next Monday
+
+- intent: choose_option
+  examples: |
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
