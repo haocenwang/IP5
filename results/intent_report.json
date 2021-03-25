@@ -1,0 +1,95 @@
+{
+  "computer": {
+    "precision": 1.0,
+    "recall": 0.6666666666666666,
+    "f1-score": 0.8,
+    "support": 3,
+    "confused_with": {
+      "window": 1
+    }
+  },
+  "choose_option": {
+    "precision": 0.8571428571428571,
+    "recall": 1.0,
+    "f1-score": 0.923076923076923,
+    "support": 6,
+    "confused_with": {}
+  },
+  "window": {
+    "precision": 0.6,
+    "recall": 1.0,
+    "f1-score": 0.7499999999999999,
+    "support": 3,
+    "confused_with": {}
+  },
+  "screen": {
+    "precision": 1.0,
+    "recall": 0.6666666666666666,
+    "f1-score": 0.8,
+    "support": 3,
+    "confused_with": {
+      "window": 1
+    }
+  },
+  "date_inform": {
+    "precision": 1.0,
+    "recall": 0.8888888888888888,
+    "f1-score": 0.9411764705882353,
+    "support": 9,
+    "confused_with": {
+      "request_room": 1
+    }
+  },
+  "num_p_inform": {
+    "precision": 0.875,
+    "recall": 1.0,
+    "f1-score": 0.9333333333333333,
+    "support": 7,
+    "confused_with": {}
+  },
+  "from_time_inform": {
+    "precision": 1.0,
+    "recall": 0.75,
+    "f1-score": 0.8571428571428571,
+    "support": 4,
+    "confused_with": {
+      "choose_option": 1
+    }
+  },
+  "request_room": {
+    "precision": 0.9166666666666666,
+    "recall": 1.0,
+    "f1-score": 0.9565217391304348,
+    "support": 11,
+    "confused_with": {}
+  },
+  "greet": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1-score": 1.0,
+    "support": 24,
+    "confused_with": {}
+  },
+  "duration_inform": {
+    "precision": 1.0,
+    "recall": 0.8,
+    "f1-score": 0.888888888888889,
+    "support": 5,
+    "confused_with": {
+      "num_p_inform": 1
+    }
+  },
+  "accuracy": 0.9333333333333333,
+  "macro avg": {
+    "precision": 0.9248809523809524,
+    "recall": 0.8772222222222222,
+    "f1-score": 0.8850140212160673,
+    "support": 75
+  },
+  "weighted avg": {
+    "precision": 0.9486825396825397,
+    "recall": 0.9333333333333333,
+    "f1-score": 0.9331618414738619,
+    "support": 75
+  }
+}

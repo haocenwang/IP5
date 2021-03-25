@@ -83,6 +83,19 @@ class ValidateRoomForm(FormValidationAction):
         """Validate from_date value."""
         date = tracker.get_slot('from_date')
         date_temp = date[0:10]
+        temp = str(date_temp)
+
+        today = datetime.date.today()
+        today = str(today)
+        today = today.replace("-", "")
+        today = int(today)
+
+        temp = temp.replace("-", "")
+        temp = int(temp)
+
+        if (temp < today):
+            dispatcher.utter_message(text="Date can not be in the past")
+            return {"from_date": None}
 
         return {"from_date": date_temp}
 
@@ -95,13 +108,25 @@ class ValidateRoomForm(FormValidationAction):
     ) -> Dict[Text, Any]:
         """Validate from_date value."""
         date = tracker.get_slot('from_time')
-        date_temp = date[0:10]
         time_temp = date[11:19]
+
+        first = time_temp[0]
+        first = int(first)
+        second = time_temp[1]
+        second = int(second)
 
         if time_temp == "00:00:00":
             return {"from_time": None}
+
+        if first < 1 and second < 8:
+            dispatcher.utter_message(text="The earliest appointment start at 8am")
+            return {"from_time": None}
+
+        if first > 1 and second >= 0:
+            dispatcher.utter_message(text="The latest appointment start at 8pm")
+            return {"from_time": None}
         else:
-            return {"from_date": date_temp, "from_time": time_temp}
+            return {"from_time": time_temp}
 
 
 class CheckRoom(Action):
@@ -227,168 +252,299 @@ class CheckRoom(Action):
         # only the rooms, which fits the requirement of the user, are left
         for i in range(len(temp_room_type)):
             dispatcher.utter_message(text="Possibilities are: " + str(temp_room_type[i][0]))
-            rooms.append("Room: " + str(temp_room_type[i][0]))
-            # check the timetable whether this room is available or not
-            room = "Room: " + str(temp_room_type[i][0])
-            # find the room in timetable and check the time
-            for i in range(len(timetable)):
-                if timetable[i][0] == room:
-                    room_timetable.append(timetable[i])
+            if len(timetable) == 0:
+                date_temp = str(date)
+                date_temp = date_temp[:4] + "-" + date_temp[4:]
+                date = date_temp[:7] + "-" + date_temp[7:]
 
-        for i in range(len(room_timetable)):
-            print("timetable[i][0]: " + room_timetable[i][0])
+                time_temp = str(time_start)
+                time_temp = time_temp[:2] + ":" + time_temp[2:]
+                start = time_temp[:5] + ":" + time_temp[5:]
 
-        start_index = 0
-        if len(room_timetable) > 0:
-            for i in range(len(room_timetable)):
-                temp_timetable = room_timetable[i][1:]
-                print(temp_timetable)
-                while start_index < len(temp_timetable):
-                    if ((temp_timetable[start_index] <= eventstart) &
-                            (temp_timetable[start_index + 1] > eventstart)):
-                        booked = False
-                        dispatcher.utter_message(text="Start Time Conflict with room: " + room_timetable[i][0])
-                        break
-                    else:
-                        start_index += 2
-                start_index = 0;
-                while start_index < len(temp_timetable) - 1:
-                    if ((temp_timetable[start_index] < eventend) &
-                            (temp_timetable[start_index + 1] > eventend)):
-                        booked = False
-                        dispatcher.utter_message(text="End Time Conflict with room: " + room_timetable[i][0])
-                        break
-                    else:
-                        start_index += 2
+                time_temp = str(time_end)
+                time_temp = time_temp[:2] + ":" + time_temp[2:]
+                end = time_temp[:5] + ":" + time_temp[5:]
 
-                if booked:
-                    dispatcher.utter_message(text="Booking successfull")
-                    date_temp = str(date)
-                    date_temp = date_temp[:4] + "-" + date_temp[4:]
-                    date = date_temp[:7] + "-" + date_temp[7:]
+                dispatcher.utter_message(date + " " + start + " " + end)
+                create_event = {
+                    'summary': 'Meeting',
+                    'location': "Room: " + str(temp_room_type[i][0]),
+                    'description': '',
+                    'start': {
+                        'dateTime': date + 'T' + start,
+                        'timeZone': 'Europe/Zurich',
+                    },
+                    'end': {
+                        'dateTime': date + 'T' + end,
+                        'timeZone': 'Europe/Zurich',
+                    },
 
-                    time_temp = str(time_start)
-                    time_temp = time_temp[:2] + ":" + time_temp[2:]
-                    start = time_temp[:5] + ":" + time_temp[5:]
-
-                    time_temp = str(time_end)
-                    time_temp = time_temp[:2] + ":" + time_temp[2:]
-                    end = time_temp[:5] + ":" + time_temp[5:]
-
-                    dispatcher.utter_message(date + " " + start + " " + end)
-
-                    create_event = {
-                        'summary': 'Meeting',
-                        'location': str(room_timetable[i][0]),
-                        'description': '',
-                        'start': {
-                            'dateTime': date + 'T' + start,
-                            'timeZone': 'Europe/Zurich',
-                        },
-                        'end': {
-                            'dateTime': date + 'T' + end,
-                            'timeZone': 'Europe/Zurich',
-                        },
-
-                        'attendees': [
-                            {'email': 'lpage@example.com'},
-                            {'email': 'sbrin@example.com'},
+                    'attendees': [
+                        {'email': 'lpage@example.com'},
+                        {'email': 'sbrin@example.com'},
+                    ],
+                    'reminders': {
+                        'useDefault': False,
+                        'overrides': [
+                            {'method': 'email', 'minutes': 24 * 60},
+                            {'method': 'popup', 'minutes': 10},
                         ],
-                        'reminders': {
-                            'useDefault': False,
-                            'overrides': [
-                                {'method': 'email', 'minutes': 24 * 60},
-                                {'method': 'popup', 'minutes': 10},
+                    },
+                }
+                quickstart.postapi(create_event)
+                dispatcher.utter_message(text="Booking successfull")
+                return []
+
+            else:
+                rooms.append("Room: " + str(temp_room_type[i][0]))
+                # check the timetable whether this room is available or not
+                room = "Room: " + str(temp_room_type[i][0])
+                print(room)
+                # find the room in timetable and check the time
+                j = 0
+                print("timetable")
+                print(timetable)
+                while j in range(len(timetable)):
+                    if(len(timetable)==1 and timetable[j][0]!=room):
+                        date_temp = str(date)
+                        date_temp = date_temp[:4] + "-" + date_temp[4:]
+                        date = date_temp[:7] + "-" + date_temp[7:]
+
+                        time_temp = str(time_start)
+                        time_temp = time_temp[:2] + ":" + time_temp[2:]
+                        start = time_temp[:5] + ":" + time_temp[5:]
+
+                        time_temp = str(time_end)
+                        time_temp = time_temp[:2] + ":" + time_temp[2:]
+                        end = time_temp[:5] + ":" + time_temp[5:]
+
+                        dispatcher.utter_message(date + " " + start + " " + end)
+                        create_event = {
+                            'summary': 'Meeting',
+                            'location': str(room),
+                            'description': '',
+                            'start': {
+                                'dateTime': date + 'T' + start,
+                                'timeZone': 'Europe/Zurich',
+                            },
+                            'end': {
+                                'dateTime': date + 'T' + end,
+                                'timeZone': 'Europe/Zurich',
+                            },
+
+                            'attendees': [
+                                {'email': 'lpage@example.com'},
+                                {'email': 'sbrin@example.com'},
                             ],
-                        },
-                    }
-                    quickstart.postapi(create_event)
-                    dispatcher.utter_message(text="Enter 0 to exit")
-                    break
-                else:
-                    continue
+                            'reminders': {
+                                'useDefault': False,
+                                'overrides': [
+                                    {'method': 'email', 'minutes': 24 * 60},
+                                    {'method': 'popup', 'minutes': 10},
+                                ],
+                            },
+                        }
+                        quickstart.postapi(create_event)
+                        dispatcher.utter_message(text="Booking successfull")
+                        return []
+                    elif timetable[j][0] == room:
+                        room_timetable.append(timetable[j])
+                        break
+                    j += 1
+                    if j == (len(timetable) - 1) and timetable[j][0] != room:
+                        date_temp = str(date)
+                        date_temp = date_temp[:4] + "-" + date_temp[4:]
+                        date = date_temp[:7] + "-" + date_temp[7:]
 
-            if not booked:
-                dispatcher.utter_message(text="Sorry. There is no room available according to your requirement")
-                dispatcher.utter_message(text="I am going to look some Options for you")
+                        time_temp = str(time_start)
+                        time_temp = time_temp[:2] + ":" + time_temp[2:]
+                        start = time_temp[:5] + ":" + time_temp[5:]
 
-                index_option = 1
-                room_index = 0
+                        time_temp = str(time_end)
+                        time_temp = time_temp[:2] + ":" + time_temp[2:]
+                        end = time_temp[:5] + ":" + time_temp[5:]
+
+                        dispatcher.utter_message(date + " " + start + " " + end)
+                        create_event = {
+                            'summary': 'Meeting',
+                            'location': str(room),
+                            'description': '',
+                            'start': {
+                                'dateTime': date + 'T' + start,
+                                'timeZone': 'Europe/Zurich',
+                            },
+                            'end': {
+                                'dateTime': date + 'T' + end,
+                                'timeZone': 'Europe/Zurich',
+                            },
+
+                            'attendees': [
+                                {'email': 'lpage@example.com'},
+                                {'email': 'sbrin@example.com'},
+                            ],
+                            'reminders': {
+                                'useDefault': False,
+                                'overrides': [
+                                    {'method': 'email', 'minutes': 24 * 60},
+                                    {'method': 'popup', 'minutes': 10},
+                                ],
+                            },
+                        }
+                        quickstart.postapi(create_event)
+                        dispatcher.utter_message(text="Booking successfull")
+                        return []
+
+            start_index = 0
+            if len(room_timetable) > 0:
                 for i in range(len(room_timetable)):
-                    start = int(date + '080000')
-                    end = int(date + '200000')
-                    # print(start)
-                    # print(end)
-                    temp_time = []
                     temp_timetable = room_timetable[i][1:]
                     print(temp_timetable)
-                    for i in range(len(temp_timetable)):
-                        if (int(temp_timetable[i]) >= start) & (int(temp_timetable[i]) <= end):
-                            temp_time.append(int(temp_timetable[i]))
+                    while start_index < len(temp_timetable):
+                        if ((temp_timetable[start_index] <= eventstart) &
+                                (temp_timetable[start_index + 1] > eventstart)):
+                            booked = False
+                            dispatcher.utter_message(text="Start Time Conflict with room: " + room_timetable[i][0])
+                            break
+                        else:
+                            start_index += 2
+                    start_index = 0;
+                    while start_index < len(temp_timetable) - 1:
+                        if ((temp_timetable[start_index] < eventend) &
+                                (temp_timetable[start_index + 1] > eventend)):
+                            booked = False
+                            dispatcher.utter_message(text="End Time Conflict with room: " + room_timetable[i][0])
+                            break
+                        else:
+                            start_index += 2
+
+                    if booked:
+                        dispatcher.utter_message(text="Booking successfull")
+                        date_temp = str(date)
+                        date_temp = date_temp[:4] + "-" + date_temp[4:]
+                        date = date_temp[:7] + "-" + date_temp[7:]
+
+                        time_temp = str(time_start)
+                        time_temp = time_temp[:2] + ":" + time_temp[2:]
+                        start = time_temp[:5] + ":" + time_temp[5:]
+
+                        time_temp = str(time_end)
+                        time_temp = time_temp[:2] + ":" + time_temp[2:]
+                        end = time_temp[:5] + ":" + time_temp[5:]
+
+                        dispatcher.utter_message(date + " " + start + " " + end)
+
+                        create_event = {
+                            'summary': 'Meeting',
+                            'location': str(room_timetable[i][0]),
+                            'description': '',
+                            'start': {
+                                'dateTime': date + 'T' + start,
+                                'timeZone': 'Europe/Zurich',
+                            },
+                            'end': {
+                                'dateTime': date + 'T' + end,
+                                'timeZone': 'Europe/Zurich',
+                            },
+
+                            'attendees': [
+                                {'email': 'lpage@example.com'},
+                                {'email': 'sbrin@example.com'},
+                            ],
+                            'reminders': {
+                                'useDefault': False,
+                                'overrides': [
+                                    {'method': 'email', 'minutes': 24 * 60},
+                                    {'method': 'popup', 'minutes': 10},
+                                ],
+                            },
+                        }
+                        quickstart.postapi(create_event)
+                        dispatcher.utter_message(text="Booking Successful")
+                        return []
+                    else:
+                        continue
+
+        if not booked:
+            dispatcher.utter_message(text="Sorry. There is no room available according to your requirement")
+            dispatcher.utter_message(text="I am going to look some Options for you")
+
+            index_option = 1
+            room_index = 0
+            for i in range(len(room_timetable)):
+                start = int(date + '080000')
+                end = int(date + '200000')
+                # print(start)
+                # print(end)
+                temp_time = []
+                temp_timetable = room_timetable[i][1:]
+                print(temp_timetable)
+                for i in range(len(temp_timetable)):
+                    if (int(temp_timetable[i]) >= start) & (int(temp_timetable[i]) <= end):
+                        temp_time.append(int(temp_timetable[i]))
                     # print(temp_time)
 
-                    if temp_time.__contains__(start):
-                        index = 1;
-                        while index < len(temp_time):
-                            self.option_time_start.append(temp_time[index])
+                if temp_time.__contains__(start):
+                    index = 1;
+                    while index < len(temp_time):
+                        self.option_time_start.append(temp_time[index])
+                        index += 2
+                else:
+                    self.option_time_start.append(start)
+                    index = 1
+                    while index < len(temp_time):
+                        self.option_time_start.append(temp_time[index])
+                        index += 2
+
+                print(self.option_time_start)
+
+                if (temp_time.__contains__(end)):
+                    if (self.option_time_start.__contains__(start)):
+                        index = 0
+                        while (index < len(temp_time)):
+                            self.option_time_end.append(temp_time[index])
                             index += 2
                     else:
-                        self.option_time_start.append(start)
-                        index = 1
-                        while index < len(temp_time):
-                            self.option_time_start.append(temp_time[index])
+                        index = 0
+                        while (index < len(temp_time)):
+                            self.option_time_end.append(temp_time[index])
                             index += 2
 
-                    print(self.option_time_start)
-
-                    if (temp_time.__contains__(end)):
-                        if (self.option_time_start.__contains__(start)):
-                            index = 0
-                            while (index < len(temp_time)):
-                                self.option_time_end.append(temp_time[index])
-                                index += 2
-                        else:
-                            index = 0
-                            while (index < len(temp_time)):
-                                self.option_time_end.append(temp_time[index])
-                                index += 2
-
+                else:
+                    if (self.option_time_start.__contains__(start)):
+                        index = 0
+                        while (index < len(temp_time)):
+                            self.option_time_end.append(temp_time[index])
+                            index += 2
                     else:
-                        if (self.option_time_start.__contains__(start)):
-                            index = 0
-                            while (index < len(temp_time)):
-                                self.option_time_end.append(temp_time[index])
-                                index += 2
-                        else:
-                            index = 2
-                            while (index < len(temp_time)):
-                                self.option_time_end.append(temp_time[index])
-                                index += 2
-                        self.option_time_end.append(end)
-                    print(self.option_time_end)
+                        index = 2
+                        while (index < len(temp_time)):
+                            self.option_time_end.append(temp_time[index])
+                            index += 2
+                    self.option_time_end.append(end)
+                print(self.option_time_end)
 
-                    if (len(self.option_time_start) > len(self.option_time_end)):
-                        self.option_time_start = self.option_time_start[:-1]
+                if (len(self.option_time_start) > len(self.option_time_end)):
+                    self.option_time_start = self.option_time_start[:-1]
 
-                    room = room_timetable[room_index][0]
-                    room_index += 1
+                room = room_timetable[room_index][0]
+                room_index += 1
 
-                    for i in range(len(self.option_time_start)):
-                        start = str(self.option_time_start[i])
-                        start = start[8:]
-                        start_time = datetime.time(int(start[:2]), int(start[2:4]), int(start[4:]))
-                        end = str(self.option_time_end[i])
-                        end = end[8:]
-                        end_time = datetime.time(int(end[:2]), int(end[2:4]), int(end[4:]))
-                        string = "Option " + str(index_option) + " " + room + \
-                                 " between " + str(start_time) + \
-                                 " and " + str(end_time)
-                        dispatcher.utter_message(string)
-                        self.all_options.append(string)
-                        index_option += 1
-                    self.option_time_start = []
-                    self.option_time_end = []
-                dispatcher.utter_message(template="utter_ask_num_option")
+                for i in range(len(self.option_time_start)):
+                    start = str(self.option_time_start[i])
+                    start = start[8:]
+                    start_time = datetime.time(int(start[:2]), int(start[2:4]), int(start[4:]))
+                    end = str(self.option_time_end[i])
+                    end = end[8:]
+                    end_time = datetime.time(int(end[:2]), int(end[2:4]), int(end[4:]))
+                    string = "Option " + str(index_option) + " " + room + \
+                             " between " + str(start_time) + \
+                             " and " + str(end_time)
+                    dispatcher.utter_message(string)
+                    self.all_options.append(string)
+                    index_option += 1
+                self.option_time_start = []
+                self.option_time_end = []
+            dispatcher.utter_message(template="utter_ask_num_option")
 
         return []
 
@@ -420,7 +576,7 @@ class ValidateNumOption(FormValidationAction):
             dispatcher.utter_message(text="In progress")
             return {"num_option": value}
         else:
-            dispatcher.utter_message(text="Wrong Number")
+            dispatcher.utter_message(text="Wrong Number, please try again")
             # validation failed, set slot to None
             return {"num_option": None}
 
@@ -445,11 +601,12 @@ class BookingConfirm(Action):
             all_options = CheckRoom.all_options
             string = all_options[num_option]
             string = string.split()
+            print(string)
 
             start_time = string[5]
             print("start_time: " + start_time)
             start_time = start_time.translate({ord(':'): None})
-            #print(start_time)
+            # print(start_time)
             end_time = string[7]
             print("end_time: " + end_time)
             end_time = end_time.translate({ord(':'): None})
@@ -470,21 +627,21 @@ class BookingConfirm(Action):
             start = datetime.datetime(year, month, day,
                                       int(start_time[:2]), int(start_time[2:4]), int(start_time[4:]))
 
-            end = datetime.datetime(year, month,day,
-                                    int(end_time[:2]),int(end_time[2:4]), int(end_time[4:]))
+            end = datetime.datetime(year, month, day,
+                                    int(end_time[:2]), int(end_time[2:4]), int(end_time[4:]))
 
             time_sec = int(datetime.timedelta.total_seconds(end - start) / 60)
             print(time_sec)
 
             duration = tracker.get_slot('duration')
             if (time_sec > duration):
-                end = datetime.datetime(year, month,day,
+                end = datetime.datetime(year, month, day,
                                         int(start_time[:2]), int(start_time[2:4]), int(start_time[4:])) + \
                       datetime.timedelta(minutes=duration)
 
             else:
-                end = datetime.datetime(year, month,day,
-                                        int(end_time[:2]),int(end_time[2:4]), int(end_time[4:]))
+                end = datetime.datetime(year, month, day,
+                                        int(end_time[:2]), int(end_time[2:4]), int(end_time[4:]))
             print(start)
             print(end)
 
@@ -525,5 +682,6 @@ class BookingConfirm(Action):
                 },
             }
             quickstart.postapi(create_event)
+            dispatcher.utter_message(text="Booking Successful!")
 
         return []

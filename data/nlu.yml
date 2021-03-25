@@ -33,7 +33,10 @@ nlu:
     - We are 4
     - There are 3
     - only 2
-    - 4
+    - we are -3
+    - we are -1
+    - we are 0
+    - we are -2
 
 - intent: date_inform
   examples: |
@@ -44,6 +47,8 @@ nlu:
     - tomorrow
     - after tomorrow
     - on 2020-11-26
+    - today
+    - next Wednesday
 
 
 - intent: from_time_inform
@@ -78,12 +83,6 @@ nlu:
     - with [computer](room_type)
     - i want to have a room with [computer](room_type)
     - [computer](room_type)
-
-- intent: room_type_inform
-  examples: |
-    - I want to have a room with [computer](room_type) and [screen](room_type)
-    - With [window](room_type) and [screen](room_type)
-    - [window](room_type) and [screen](room_type)
 
 
 - intent: request_room
