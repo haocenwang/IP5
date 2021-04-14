@@ -22,6 +22,7 @@ https://developers.google.com/calendar/quickstart/python
 
 after installed successfully, just copied the json file in the directory /actions in the project. There is a quickstart.py and the credential.json file
 has to be in the same directory with quickstart.py
+I have changed some code quickstart.py. you can just copy the new credential.json and put with the quickstart.py together and delete the old credential.json
 
 
 Django
